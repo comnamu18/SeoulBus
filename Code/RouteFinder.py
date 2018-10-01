@@ -35,12 +35,11 @@ def requestData() :
     APP_KEY = 'g%2F5KztLAmoWSiTeIdbG0jZXlwG4YGfheb0P7zQzKoxZBapGCIMWPIkMuQRQ9nB1YXMmFBXJi6fKxBJshDQmxZA%3D%3D'
     OPName = 'getCtyCodeList?'
     hosturl = 'http://openapi.tago.go.kr/openapi/service/BusRouteInfoInqireService/'
-    f = {urllib.parse.quote_plus('ServiceKey') : APP_KEY}
-    hosturl = hosturl + OPName + urllib.parse.urlencode(f)
-    print(hosturl)
+    hosturl = hosturl + OPName + 'Servicekey=' + APP_KEY
     myResponse = requests.get(hosturl)
     ret = pd.DataFrame()
     if(myResponse.ok):
+        print(myResponse.content)
         xml2df = XML2DataFrame(myResponse.content)
         xml_dataframe = xml2df.process_data()
         print(xml_dataframe)
