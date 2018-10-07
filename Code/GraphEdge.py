@@ -9,11 +9,12 @@ import XML2DataFrame as xdf
 
 class GraphEdge:
     rawData = None
-    busType = 1
-    busList = pd.Series()
+    busType = int()
+    busList = list()
 
     def __init__(self, fileName, busType):
         self.rawData = pd.read_csv(fileName)
+        self.busType = busType
         self.busType =  busType
         self.busList = pd.Series(self.rawData['노선번호'])
     def createEdge(self) :
@@ -21,13 +22,12 @@ class GraphEdge:
         ret = list()
 
         #default REST url settings
-        APP_KEY = 'ServiceKey=V4zKer6ld4jMtoMBafRG9Zf4XU1zr%2FyiEWoWxv9UcUQOvvSTc1Rd13hM2%2Faax1GyqCA6AMg9H6pOkDiui4te9Q%3D%3D&'
+        APP_KEY = 'serviceKey=5CQ9SA5qWhO0FwqcEFZDa%2BBreOSi1VBRXxQcGgpQQw%2FghXivHoiMgMRzzblvToQ00GoZuqIStC%2Ft0zxZiyyYlw%3D%3D&'
         hosturl = 'http://ws.bus.go.kr/api/rest/busRouteInfo/'
         IDOPName = 'getBusRouteList?'
         ROUTEOPName = 'getStaionByRoute?'
 
         for busNm in self.busList:
-            print(busNm)
             #Get Sepcific Bus ID From API
             f = {urllib.parse.quote_plus('strSrch') : busNm}
             idHosturl = hosturl + IDOPName + APP_KEY + urllib.parse.urlencode(f)
@@ -40,7 +40,7 @@ class GraphEdge:
                 routeHosturl = hosturl + ROUTEOPName + APP_KEY + urllib.parse.urlencode(f)
                 myResponse = requests.get(routeHosturl)
                 xml2df = xdf.XML2DataFrame(myResponse.content)
-                print(busNm + "Will be added")
                 ret.append(xml2df.process_route())
-
+            else:
+                print("BUS" + str(busNm) + " is not exist in API")
         return ret

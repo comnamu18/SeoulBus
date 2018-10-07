@@ -13,9 +13,14 @@ class GraphNode:
     def createNode(self) :
         return pd.Series(self.rawData['정류소번호'])
     #return bus stop's info by station number
-    def busStopInfo(self, busstop) :
+    def busStopName(self, busstop) :
+        ret = np.where(self.rawData['정류소번호'] == busstop)[0]
+        return self.rawData.loc[ret]['정류소명'].item()
+    #rturn bus stop's postion by station number
+    def busStopPositionX(self, busstop) :
         ret = list(np.where(self.rawData['정류소번호'] == busstop)[0])
-        return self.rawData.iloc[ret]
-
-
+        return self.rawData['X좌표'].iloc[ret].item()
+    def busStopPositionY(self, busstop) :
+        ret = list(np.where(self.rawData['정류소번호'] == busstop)[0])
+        return self.rawData['Y좌표'].iloc[ret].item()   
 

@@ -10,19 +10,17 @@ class XML2DataFrame:
         ret = None
         for item in self.itemList:
             bNm = item.find('busRouteNm').text
-            if item.find('routeType').text != '2' or item.find('routeType').text != '4':
-                return ret
-            if bNm == str(busRouteNm):
-                ret = item.find('busRouteId').text
+            if item.find('routeType').text == '2' or item.find('routeType').text == '4':
+                if bNm == str(busRouteNm):
+                    ret = item.find('busRouteId').text
         return ret
+    #find BusStop's by tuples List
     def process_route(self):
         ret = list()
-        before = None
+        bNm = None
         for item in self.itemList:
             sNm = item.find('arsId').text
-            if before is not None:
-                ret.append((before, sNm))
-            before = sNm
-        print(ret)
+            if bNm is not None:
+                ret.append((bNm, sNm))
+            bNm = sNm
         return ret
-
