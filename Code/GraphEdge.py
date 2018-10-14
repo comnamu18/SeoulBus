@@ -24,7 +24,7 @@ class GraphEdge:
 
     def createEdge(self, APP_KEY) :
         #setting return type
-        ret = list()
+        ret = dict()
 
         #default REST url settings
         hosturl = 'http://ws.bus.go.kr/api/rest/busRouteInfo/'
@@ -44,7 +44,11 @@ class GraphEdge:
                 routeHosturl = hosturl + ROUTEOPName + APP_KEY + urllib.parse.urlencode(f)
                 myResponse = requests.get(routeHosturl)
                 xml2df = xdf.XML2DataFrame(myResponse.content)
-                ret.append(xml2df.process_route())
+                ret[busId] = xml2df.process_route()
             else:
                 print("BUS" + str(busNm) + " is not exist in API")
         return ret
+    #return bus stop's info by station number
+    def busPathTime(self, busPath) :
+        ret = np.where(self.rawData['노선번호'] == busPath)[0]
+        return self.rawData.loc[ret]['총운행횟수'].item()

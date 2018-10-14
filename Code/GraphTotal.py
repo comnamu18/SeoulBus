@@ -10,6 +10,7 @@ import json
 class GraphTotal:
     G = nx.Graph()
     nodePos = dict()
+    labelDict = dict()
     def calDistance(self, itemA, itemB):
         ret = (self.nodeClass.busStopPositionX(itemB) - self.nodeClass.busStopPositionX(itemA))**2 + (self.nodeClass.busStopPositionY(itemB) - self.nodeClass.busStopPositionY(itemA))**2
         return ret**0.5
@@ -26,14 +27,14 @@ class GraphTotal:
         countNode = {key: 0 for key in rawNode}
 
         #Check Empty Nodes
-        for edge in Edges:
+        for busId, busPath in Edges:
             i = 0
-            for itemL in edge:
+            for itemL in busPath:
                 if int(itemL[1]) in countNode:
-                    countNode[int(itemL[1])] = countNode[int(itemL[1])] + 1
+                    countNode[int(itemL[1])] = 1
                 if i == 0:
                     if int(itemL[0]) in countNode:
-                        countNode[int(itemL[0])] = countNode[int(itemL[0])] + 1
+                        countNode[int(itemL[0])] = 1
                     i = 1
 
         #Remove Empty Nodes
@@ -51,20 +52,18 @@ class GraphTotal:
                 nodeData.append(item)
                 self.nodePos[item] = (self.nodeClass.busStopPositionX(item), self.nodeClass.busStopPositionY(item))
         #Labeling
-        labelDict = dict(zip(nodeData, nodeName))
+        self.labelDict = dict(zip(nodeData, nodeName))
 
-        #Weight Calculating
+        #Weight Calculating for count how many buspath passing
         weightL = dict()
-        for edge in Edges:
-            for itemL in edge:
-                duplicateChk = (itemL[1], itemL[0])
+        for busId, busPath in Edges:
+            for itemL in busPath:
                 if itemL in weightL:
-                    weightL[itemL] = weightL[itemL] + 1
-                elif duplicateChk in weightL:
-                    weightL[duplicateChk] = weightL[duplicateChk] + 1
+                    weightL[itemL] = weightL[itemL] + self.edgeClass.busPathTime(busId)
                 else:
                     if int(itemL[0]) in countNode and int(itemL[1]) in countNode:
-                        weightL[itemL] = 1
+                        weightL[itemL] = self.edgeClass.busPathTime(busId)
+        #Weight Calculating for distance
         for edge in Edges:
             for itemL in edge:
                 if itemL in weightL:
@@ -76,14 +75,13 @@ class GraphTotal:
         for itemL, v in weightL.items():
             self.G.add_edge(int(itemL[0]), int(itemL[1]), weight=v)
         d = nx.degree(self.G)
-
+        print(d)
 
     #draw graph with labels problem with encoding
     #nx.draw(G, pos=nodePos, labels=labelDict, with_labels=True)
     def drawGraph(self):
         nx.draw(self.G, pos=self.nodePos)
         plt.show()
-
 
 
 

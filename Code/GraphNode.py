@@ -23,6 +23,7 @@ class GraphNode:
     def busStopPositionY(self, busstop) :
         ret = np.where(self.rawData['정류소번호'] == busstop)[0]
         return self.rawData['Y좌표'].iloc[ret].item()
+    #To search exact bus stop name
     def busStopSearch(self, busstopName) :
         searching  = self.rawData['정류소명']
         ret = list()
@@ -30,6 +31,7 @@ class GraphNode:
             if busstopName in item:
                 ret.append(item)
         return ret
+    # To get Bus Stop ID num
     def busNumSearch(self, busstopName) :
         ret = np.where(self.rawData['정류소명'] == busstopName)[0]
         return self.rawData.loc[ret]['정류소번호'].item()
