@@ -44,11 +44,17 @@ class GraphEdge:
                 routeHosturl = hosturl + ROUTEOPName + APP_KEY + urllib.parse.urlencode(f)
                 myResponse = requests.get(routeHosturl)
                 xml2df = xdf.XML2DataFrame(myResponse.content)
-                ret[busId] = xml2df.process_route()
+                ret[busNm] = xml2df.process_route()
             else:
                 print("BUS" + str(busNm) + " is not exist in API")
         return ret
+    
     #return bus stop's info by station number
     def busPathTime(self, busPath) :
-        ret = np.where(self.rawData['노선번호'] == busPath)[0]
-        return self.rawData.loc[ret]['총운행횟수'].item()
+        selectedList = np.where(self.rawData['노선번호'] == busPath)[0]
+        ret = 0
+        for i in selectedList:
+            if self.rawData.loc[i]['구분'].item() == self.busType:
+                ret = ret + self.rawData.loc[i]['총운행횟수'].item()
+        
+        return ret

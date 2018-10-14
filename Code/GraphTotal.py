@@ -15,7 +15,7 @@ class GraphTotal:
         ret = (self.nodeClass.busStopPositionX(itemB) - self.nodeClass.busStopPositionX(itemA))**2 + (self.nodeClass.busStopPositionY(itemB) - self.nodeClass.busStopPositionY(itemA))**2
         return ret**0.5
 
-    def __init__(self, nodeFile, edgeFile, dayType, startTime, endTime, APP_KEY):
+    def __init__(self, nodeFile, edgeFile, dayType, startTime, endTime, APP_KEY=None):
         self.dayType = dayType
         self.startTime = startTime
         self.endTime = endTime
@@ -27,7 +27,7 @@ class GraphTotal:
         countNode = {key: 0 for key in rawNode}
 
         #Check Empty Nodes
-        for busId, busPath in Edges:
+        for busId, busPath in Edges.items():
             i = 0
             for itemL in busPath:
                 if int(itemL[1]) in countNode:
@@ -41,6 +41,7 @@ class GraphTotal:
         for key, value in countNode.items():
             if value == 0:
                 rawNode.remove(key)
+                self.nodeClass.removeNode(key)
 
         #Create Datas
         nodeName = list()
@@ -56,15 +57,15 @@ class GraphTotal:
 
         #Weight Calculating for count how many buspath passing
         weightL = dict()
-        for busId, busPath in Edges:
+        for busId, busPath in Edges.items():
             for itemL in busPath:
                 if itemL in weightL:
-                    weightL[itemL] = weightL[itemL] + self.edgeClass.busPathTime(busId)
+                    weightL[itemL] = weightL[itemL] + self.edgeClass.busPathTime(str(busId))
                 else:
                     if int(itemL[0]) in countNode and int(itemL[1]) in countNode:
-                        weightL[itemL] = self.edgeClass.busPathTime(busId)
+                        weightL[itemL] = self.edgeClass.busPathTime(str(busId))
         #Weight Calculating for distance
-        for edge in Edges:
+        for busId, edge in Edges.items():
             for itemL in edge:
                 if itemL in weightL:
                     weightL[itemL] = weightL[itemL] / self.calDistance(int(itemL[0]), int(itemL[1]))
@@ -74,8 +75,6 @@ class GraphTotal:
             self.G.add_node(int(n), pos=v)
         for itemL, v in weightL.items():
             self.G.add_edge(int(itemL[0]), int(itemL[1]), weight=v)
-        d = nx.degree(self.G)
-        print(d)
 
     #draw graph with labels problem with encoding
     #nx.draw(G, pos=nodePos, labels=labelDict, with_labels=True)

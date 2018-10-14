@@ -68,10 +68,12 @@ TotalUser = int(TotalUser)
 startNode = list()
 for i in range(TotalUser):
     busStopName = input("Please type busstop Name : ")
-    example = graph.nodeClass.busStopSearch(busStopName)
-    print(example)
+    example = graph.nodeClass.busStopSearch(str(busStopName))
+    for i in range(len(example)):
+        print(str(i + 1) + ". " + example[i][0] + "(" + str(example[i][1]) + ")")
     selectNum = input("Please type number that you want to start : ")
-    startNode.append(graph.nodeClass.busNumSearch(example[selectNum]))
+    selectedItem = example[int(selectNum) - 1][1]
+    startNode.append(int(selectedItem))
 
 if nx.all_pairs_node_connectivity(graph.G, startNode) is None:
     print("Nodes are not connected!")

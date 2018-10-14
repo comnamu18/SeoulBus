@@ -25,14 +25,16 @@ class GraphNode:
         return self.rawData['Y좌표'].iloc[ret].item()
     #To search exact bus stop name
     def busStopSearch(self, busstopName) :
-        searching  = self.rawData['정류소명']
+        searchingName = self.rawData['정류소명']
+        searchingNum = self.rawData['정류소번호']
         ret = list()
-        for item in searching:
-            if busstopName in item:
-                ret.append(item)
+        retItem = tuple()
+        for i in range(len(searchingName)):
+            if busstopName in searchingName[i]:
+                ret.append((searchingName[i], searchingNum[i]))
         return ret
-    # To get Bus Stop ID num
-    def busNumSearch(self, busstopName) :
-        ret = np.where(self.rawData['정류소명'] == busstopName)[0]
-        return self.rawData.loc[ret]['정류소번호'].item()
+    def removeNode(self, busstop) :
+        findIndex = np.where(self.rawData['정류소번호'] == busstop)[0]
+        if findIndex[0].size != 0:
+            self.rawData = self.rawData.drop(findIndex)
 
