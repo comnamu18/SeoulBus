@@ -18,9 +18,19 @@ class GraphNode:
         return self.rawData.loc[ret]['정류소명'].item()
     #rturn bus stop's postion by station number
     def busStopPositionX(self, busstop) :
-        ret = list(np.where(self.rawData['정류소번호'] == busstop)[0])
+        ret = np.where(self.rawData['정류소번호'] == busstop)[0]
         return self.rawData['X좌표'].iloc[ret].item()
     def busStopPositionY(self, busstop) :
-        ret = list(np.where(self.rawData['정류소번호'] == busstop)[0])
-        return self.rawData['Y좌표'].iloc[ret].item()   
+        ret = np.where(self.rawData['정류소번호'] == busstop)[0]
+        return self.rawData['Y좌표'].iloc[ret].item()
+    def busStopSearch(self, busstopName) :
+        searching  = self.rawData['정류소명']
+        ret = list()
+        for item in searching:
+            if busstopName in item:
+                ret.append(item)
+        return ret
+    def busNumSearch(self, busstopName) :
+        ret = np.where(self.rawData['정류소명'] == busstopName)[0]
+        return self.rawData.loc[ret]['정류소번호'].item()
 

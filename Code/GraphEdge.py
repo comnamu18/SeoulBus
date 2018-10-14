@@ -12,17 +12,21 @@ class GraphEdge:
     busType = int()
     busList = list()
 
-    def __init__(self, fileName, busType):
+    def __init__(self, fileName, busType, startTime, endTime):
         self.rawData = pd.read_csv(fileName)
         self.busType = busType
-        self.busType =  busType
-        self.busList = pd.Series(self.rawData['노선번호'])
-    def createEdge(self) :
+        self.startTime = startTime
+        self.endTime = endTime
+        rawList = np.where(self.rawData['구분'] == self.busType)[0]
+        for i in rawList:
+            if self.rawData['첫차'].iloc[i].item() <= startTime and self.rawData['막차'].iloc[i].item() >= endTime :
+                self.busList.append(self.rawData['노선번호'].iloc[i])
+
+    def createEdge(self, APP_KEY) :
         #setting return type
         ret = list()
 
         #default REST url settings
-        APP_KEY = 'serviceKey=5CQ9SA5qWhO0FwqcEFZDa%2BBreOSi1VBRXxQcGgpQQw%2FghXivHoiMgMRzzblvToQ00GoZuqIStC%2Ft0zxZiyyYlw%3D%3D&'
         hosturl = 'http://ws.bus.go.kr/api/rest/busRouteInfo/'
         IDOPName = 'getBusRouteList?'
         ROUTEOPName = 'getStaionByRoute?'

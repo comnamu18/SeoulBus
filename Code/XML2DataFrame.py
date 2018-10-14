@@ -10,7 +10,7 @@ class XML2DataFrame:
         ret = None
         for item in self.itemList:
             bNm = item.find('busRouteNm').text
-            if item.find('routeType').text == '2' or item.find('routeType').text == '4':
+            if item.find('routeType').text == '2' or item.find('routeType').text == '4' or item.find('routeType').text == '3' or item.find('routeType').text == '5':
                 if bNm == str(busRouteNm):
                     ret = item.find('busRouteId').text
         return ret
