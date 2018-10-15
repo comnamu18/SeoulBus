@@ -19,7 +19,7 @@ def getMediumPoint(G, path):
         point = i
     goal = int(getPathWeight(G, path) / 2)
     goalI = 0
-    for i in range(weight):
+    for i in range(weight): 
         if weight[i] > goal:
             goalI = i
             break
@@ -84,6 +84,7 @@ for i in range(TotalUser):
     selectNum = input("Please type number that you want to start : ")
     selectedItem = example[int(selectNum) - 1][1]
     startNode.append(int(selectedItem))
+    graph.color_map[graph.nodeData.index(int(selectedItem))] = 'blue'
 
 if not chcekConnectivity(graph.G, startNode):
     print("Nodes are not connected!")

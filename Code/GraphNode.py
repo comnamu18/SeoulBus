@@ -28,7 +28,6 @@ class GraphNode:
         searchingName = self.rawData['정류소명']
         searchingNum = self.rawData['정류소번호']
         ret = list()
-        retItem = tuple()
         for i in range(len(searchingName)):
             if busstopName in searchingName[i]:
                 ret.append((searchingName[i], searchingNum[i]))
@@ -37,4 +36,4 @@ class GraphNode:
         findIndex = np.where(self.rawData['정류소번호'] == busstop)[0]
         if findIndex[0].size != 0:
             self.rawData = self.rawData.drop(findIndex)
-
+            self.rawData = self.rawData.reset_index(drop = True)

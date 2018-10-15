@@ -9,8 +9,10 @@ import json
 
 class GraphTotal:
     G = nx.Graph()
+    color_map = list()
     nodePos = dict()
     labelDict = dict()
+    nodeData = list()
     def calDistance(self, itemA, itemB):
         ret = (self.nodeClass.busStopPositionX(itemB) - self.nodeClass.busStopPositionX(itemA))**2 + (self.nodeClass.busStopPositionY(itemB) - self.nodeClass.busStopPositionY(itemA))**2
         return ret**0.5
@@ -45,15 +47,15 @@ class GraphTotal:
 
         #Create Datas
         nodeName = list()
-        nodeData = list()
         for item in rawNode:
-            if not(item in nodeData):
+            if not(item in self.nodeData):
                 name = self.nodeClass.busStopName(item)
                 nodeName.append(name)
-                nodeData.append(item)
+                self.nodeData.append(item)
                 self.nodePos[item] = (self.nodeClass.busStopPositionX(item), self.nodeClass.busStopPositionY(item))
+                self.color_map.append('red')
         #Labeling
-        self.labelDict = dict(zip(nodeData, nodeName))
+        self.labelDict = dict(zip(self.nodeData, nodeName))
 
         #Weight Calculating for count how many buspath passing
         weightL = dict()
