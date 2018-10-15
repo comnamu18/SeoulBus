@@ -78,11 +78,7 @@ class GraphTotal:
         for itemL, v in weightL.items():
             self.G.add_edge(int(itemL[0]), int(itemL[1]), weight=v)
 
-    #draw graph with labels problem with encoding
-    #nx.draw(G, pos=nodePos, labels=labelDict, with_labels=True)
+    #draw graph with labels Coloring and positioning
     def drawGraph(self):
-        nx.draw(self.G, pos=self.nodePos)
+        nx.draw(self.G, node_color = self.color_map, pos=self.nodePos)
         plt.show()
-
-
-

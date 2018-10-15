@@ -109,5 +109,6 @@ else:
         if ret == -1 or cal < ret:
             cal = ret
             way = list(i)
+    graph.color_map[graph.nodeData.index(int(ret[0]))] = 'green'
 
 graph.drawGraph()
