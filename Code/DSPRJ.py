@@ -19,7 +19,7 @@ def getMediumPoint(G, path):
         point = i
     goal = int(getPathWeight(G, path) / 2)
     goalI = 0
-    for i in range(weight): 
+    for i in range(len(weight)): 
         if weight[i] > goal:
             goalI = i
             break
@@ -34,7 +34,8 @@ def getPathWeight(G, path):
     pathIter = iter(path)
     point = next(pathIter)
     for i in pathIter:
-        ret = ret + G[point][i]['weight']
+        ret = ret + G[int(point)][i]['weight']
+        point = i
     return ret
 #3점에서의 약속장소 리턴
 def ThreePointShortestPath(G, pointList):
@@ -65,7 +66,7 @@ def chcekConnectivity(G, startNode):
         ret = True
     return ret
 
-SERVICE_KEY = 'serviceKey=5CQ9SA5qWhO0FwqcEFZDa%2BBreOSi1VBRXxQcGgpQQw%2FghXivHoiMgMRzzblvToQ00GoZuqIStC%2Ft0zxZiyyYlw%3D%3D&'
+SERVICE_KEY = 'serviceKey=mJr7CZ0Sg9fTC3xXoUV%2BjEFq7RKISvmNOUhri%2Fxrqn2U49W%2BEwA7CpnYcr44DMKev25SQ%2FcmUbiwpcNxufva2A%3D%3D'
 APP_KEY = input("Plese type Admin Key : ")
 graph = None
 #In Service, this part will be represent as Server
@@ -79,36 +80,61 @@ startNode = list()
 for i in range(TotalUser):
     busStopName = input("Please type busstop Name : ")
     example = graph.nodeClass.busStopSearch(str(busStopName))
-    for i in range(len(example)):
-        print(str(i + 1) + ". " + example[i][0] + "(" + str(example[i][1]) + ")")
-    selectNum = input("Please type number that you want to start : ")
-    selectedItem = example[int(selectNum) - 1][1]
-    startNode.append(int(selectedItem))
-    graph.color_map[graph.nodeData.index(int(selectedItem))] = 'blue'
+    if len(example) == 0 :
+        print("정류소가 검색되지 않았습니다. 다른 정류소를 검색해 주세요")
+        i = i -1
+    else:
+        for i in range(len(example)):
+            print(str(i + 1) + ". " + example[i][0] + "(" + str(example[i][1]) + ")")
+        selectNum = input("Please type number that you want to start : ")
+        selectedItem = example[int(selectNum) - 1][1]
+        startNode.append(int(selectedItem))
+        graph.color_map[graph.nodeData.index(int(selectedItem))] = 'blue'
 
 if not chcekConnectivity(graph.G, startNode):
     print("Nodes are not connected!")
 else:
     ret = list()
-    if len(startNode) == 2:
-        ret.append(nx.dijkstra_path(graph.G, startNode[0], startNode[1], weight='weight'))
+    testingPath = graph.checkListInPath(startNode)
+    if not(-1 in testingPath):
+        busId = list(testingPath.keys())[0]
+        print(str(busId) + "버스가 모든 목적지를 순회하고 있습니다.")
+        for i in testingPath[busId]:
+            if not(i in startNode):
+                graph.color_map[graph.nodeData.index(int(i))] = 'yellow'
     else:
-        threePointList = list()
+        if len(startNode) == 2:
+            shortestPath = nx.dijkstra_path(graph.G, startNode[0], startNode[1], weight='weight')
+            ret.append(getMediumPoint(graph.G, shortestPath))
+        elif len(startNode) == 3:
+            cal = ThreePointShortestPath(graph.G, startNode)
+            ret.append(cal)
+        else:
+            threePointList = list()
+            for i in startNode:
+                tmpList = list(startNode)
+                tmpList.remove(i)
+                for j in tmpList:
+                    mediumList = list(startNode)
+                    mediumList.remove(j)
+                    for k in mediumList:
+                        item = [i, j, k]
+                        threePointList.append(item)
+            ret = -1
+            way = list()
+            cal = ThreePointShortestPath(graph.G, [i[0], i[1], i[2]])
+            if ret == -1 or cal < ret:
+                cal = ret
+                way = list(i)
+        graph.color_map[graph.nodeData.index(int(ret[0]))] = 'green'
+        destId = ret[0]
+        print(graph.nodeClass.busStopName(destId))
+        weight = 0
         for i in startNode:
-            tmpList = list(startNode)
-            tmpList.remove(i)
-            for j in tmpList:
-                mediumList = list(startNode)
-                mediumList.remove(j)
-                for k in mediumList:
-                    item = [i, j, k]
-                    threePointList.append(item)
-        ret = -1
-        way = list()
-        cal = ThreePointShortestPath(graph.G, [i[0], i[1], i[2]])
-        if ret == -1 or cal < ret:
-            cal = ret
-            way = list(i)
-    graph.color_map[graph.nodeData.index(int(ret[0]))] = 'green'
+            pathW = nx.dijkstra_path(graph.G, i, destId, weight='weight')
+            tmp = getPathWeight(graph.G, pathW)
+            print(graph.labelDict[i] + " : " + str(tmp))
+            weight = weight + tmp
+        print("total weight is " + str(weight))
 
 graph.drawGraph()

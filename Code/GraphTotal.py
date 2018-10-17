@@ -25,11 +25,11 @@ class GraphTotal:
         self.edgeClass = ge.GraphEdge(edgeFile, dayType, startTime, endTime)
 
         rawNode = self.nodeClass.createNode().tolist()
-        Edges = self.edgeClass.createEdge(APP_KEY)
+        self.Edges = self.edgeClass.createEdge(APP_KEY)
         countNode = {key: 0 for key in rawNode}
 
         #Check Empty Nodes
-        for busId, busPath in Edges.items():
+        for busId, busPath in self.Edges.items():
             i = 0
             for itemL in busPath:
                 if int(itemL[1]) in countNode:
@@ -59,7 +59,7 @@ class GraphTotal:
 
         #Weight Calculating for count how many buspath passing
         weightL = dict()
-        for busId, busPath in Edges.items():
+        for busId, busPath in self.Edges.items():
             for itemL in busPath:
                 if itemL in weightL:
                     weightL[itemL] = weightL[itemL] + self.edgeClass.busPathTime(str(busId))
@@ -67,10 +67,10 @@ class GraphTotal:
                     if int(itemL[0]) in countNode and int(itemL[1]) in countNode:
                         weightL[itemL] = self.edgeClass.busPathTime(str(busId))
         #Weight Calculating for distance
-        for busId, edge in Edges.items():
+        for busId, edge in self.Edges.items():
             for itemL in edge:
                 if itemL in weightL:
-                    weightL[itemL] = weightL[itemL] / self.calDistance(int(itemL[0]), int(itemL[1]))
+                    weightL[itemL] = self.calDistance(int(itemL[0]), int(itemL[1])) / weightL[itemL]
 
         #Create Graph
         for n, v in self.nodePos.items():
@@ -82,3 +82,45 @@ class GraphTotal:
     def drawGraph(self):
         nx.draw(self.G, node_color = self.color_map, pos=self.nodePos)
         plt.show()
+    def checkListInPath(self, path):
+        retId = -1
+        ret = dict()
+        print(path)
+        for busId, busPath in self.Edges.items():
+            chk = len(path)
+            i = 0
+            for itemL in busPath:
+                if int(itemL[1]) in path:
+                    chk = chk - 1
+                if i == 0:
+                    if int(itemL[0]) in path:
+                        chk = chk - 1
+                    i = 1
+            if chk <= 0 :
+                retId = int(busId)
+        if retId == -1:
+            ret[-1] = list()
+        else:
+            busRoute = self.Edges[str(retId)]
+            answerRoute = list()
+            i = 0
+            start = 0
+            chk = len(path)
+            for itemL in busRoute:
+                if int(itemL[1]) in path:
+                    if chk <= 0 :
+                        break
+                    elif start == 0:
+                        start = 1
+                        answerRoute.append(itemL[1])
+                        chk = chk - 1
+                    elif start == 1:
+                        answerRoute.append(itemL[1])
+                        chk = chk - 1
+                if i == 0:
+                    if int(itemL[0]) in path:
+                        start = 1
+                        answerRoute.append(itemL[0])
+                        chk = chk - 1
+            ret[retId] = list(answerRoute)
+        return ret
