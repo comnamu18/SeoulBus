@@ -66,7 +66,7 @@ def chcekConnectivity(G, startNode):
         ret = True
     return ret
 
-SERVICE_KEY = 'serviceKey=mJr7CZ0Sg9fTC3xXoUV%2BjEFq7RKISvmNOUhri%2Fxrqn2U49W%2BEwA7CpnYcr44DMKev25SQ%2FcmUbiwpcNxufva2A%3D%3D'
+SERVICE_KEY = 'serviceKey=%2Fh7zZp%2BLhUwW4TEDZjcNrvHqMPgFlnqMl3ooLmM7Skaj6IGC6KiT55Xz%2FbbgyQ9aOBht90%2BvIvI4%2Bwq9Qa14Ww%3D%3D&'
 APP_KEY = input("Plese type Admin Key : ")
 graph = None
 #In Service, this part will be represent as Server
@@ -99,9 +99,6 @@ else:
     if not(-1 in testingPath):
         busId = list(testingPath.keys())[0]
         print(str(busId) + "버스가 모든 목적지를 순회하고 있습니다.")
-        for i in testingPath[busId]:
-            if not(i in startNode):
-                graph.color_map[graph.nodeData.index(int(i))] = 'yellow'
     else:
         if len(startNode) == 2:
             shortestPath = nx.dijkstra_path(graph.G, startNode[0], startNode[1], weight='weight')
